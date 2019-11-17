@@ -55,11 +55,17 @@ class User implements UserInterface
      */
     private $chats;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Friendship", mappedBy="friend1", orphanRemoval=true)
+     */
+    private $friendships;
+
     public function __construct()
     {
         $this->sentMessages = new ArrayCollection();
         $this->receivedMessages = new ArrayCollection();
         $this->chats = new ArrayCollection();
+        $this->friendships = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -233,6 +239,40 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($chat->getParticipant1() === $this) {
                 $chat->setParticipant1(null);
+            } elseif ($chat->getParticipant2() === $this) {
+                $chat->setParticipant2(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Friendship[]
+     */
+    public function getFriendships(): Collection
+    {
+        return $this->friendships;
+    }
+
+    public function addFriendship(Friendship $friendship): self
+    {
+        if (!$this->friendships->contains($friendship)) {
+            $this->friendships[] = $friendship;
+        }
+
+        return $this;
+    }
+
+    public function removeFriendship(Friendship $friendship): self
+    {
+        if ($this->friendships->contains($friendship)) {
+            $this->friendships->removeElement($friendship);
+            // set the owning side to null (unless already changed)
+            if ($friendship->getFriend1() === $this) {
+                $friendship->setFriend1(null);
+            } elseif ($friendship->getFriend2() === $this) {
+                $friendship->setFriend2(null);
             }
         }
 
