@@ -50,10 +50,16 @@ class User implements UserInterface
      */
     private $receivedMessages;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Chat", mappedBy="participant1")
+     */
+    private $chats;
+
     public function __construct()
     {
         $this->sentMessages = new ArrayCollection();
         $this->receivedMessages = new ArrayCollection();
+        $this->chats = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -197,6 +203,36 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($receivedMessage->getRecipient() === $this) {
                 $receivedMessage->setRecipient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Chat[]
+     */
+    public function getChats(): Collection
+    {
+        return $this->chats;
+    }
+
+    public function addChat(Chat $chat): self
+    {
+        if (!$this->chats->contains($chat)) {
+            $this->chats[] = $chat;
+        }
+
+        return $this;
+    }
+
+    public function removeChat(Chat $chat): self
+    {
+        if ($this->chats->contains($chat)) {
+            $this->chats->removeElement($chat);
+            // set the owning side to null (unless already changed)
+            if ($chat->getParticipant1() === $this) {
+                $chat->setParticipant1(null);
             }
         }
 

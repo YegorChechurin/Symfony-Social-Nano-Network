@@ -38,6 +38,11 @@ class Message
      */
     private $recipient;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Chat", mappedBy="lastMessage", cascade={"persist", "remove"})
+     */
+    private $chat;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -89,6 +94,23 @@ class Message
     {
         $this->recipient = $recipient;
         $this->recipient->addReceivedMessage($this);
+
+        return $this;
+    }
+
+    public function getChat(): ?Chat
+    {
+        return $this->chat;
+    }
+
+    public function setChat(Chat $chat): self
+    {
+        $this->chat = $chat;
+
+        // set the owning side of the relation if necessary
+        if ($chat->getLastMessage() !== $this) {
+            $chat->setLastMessage($this);
+        }
 
         return $this;
     }
