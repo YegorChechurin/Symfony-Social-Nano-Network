@@ -19,6 +19,18 @@ class ChatRepository extends ServiceEntityRepository
         parent::__construct($registry, Chat::class);
     }
 
+    public function findOneByParticipants(array $participants): ?Chat
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.participant1 = :p1 AND c.participant2 = :p2') 
+            ->orWhere('c.participant2 = :p1 AND c.participant1 = :p2')
+            ->setParameter('p1', $participants['participant1'])
+            ->setParameter('p2', $participants['participant2'])
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     // /**
     //  * @return Chat[] Returns an array of Chat objects
     //  */
@@ -32,18 +44,6 @@ class ChatRepository extends ServiceEntityRepository
             ->setMaxResults(10)
             ->getQuery()
             ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Chat
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
         ;
     }
     */
