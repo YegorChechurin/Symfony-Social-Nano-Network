@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MessageRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Message
 {
@@ -70,6 +71,14 @@ class Message
         $this->timestamp = $timestamp;
 
         return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setTimestampToNow()
+    {
+        $this->timestamp = new \DateTime();
     }
 
     public function getSender(): ?User
