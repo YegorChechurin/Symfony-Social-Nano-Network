@@ -81,4 +81,13 @@ class FixtureAwareTestCase extends KernelTestCase
 
         return $this->fixtureLoader;
     }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        // doing this is recommended to avoid memory leaks
+        $this->em->close();
+        $this->em = null;
+    }
 }
