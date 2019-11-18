@@ -19,6 +19,9 @@
         <testsuite name="Project Test Suite">
             <directory>tests</directory>
         </testsuite>
+        <testsuite name="Doctrine Event Subscribers">
+            <directory>tests/EventSubscriber/DoctrineEventSubscriber</directory>
+        </testsuite>
     </testsuites>
 
     <filter>
