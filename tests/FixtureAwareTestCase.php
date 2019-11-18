@@ -15,7 +15,7 @@ class FixtureAwareTestCase extends KernelTestCase
     /**
      * @var EntityManager
      */
-    private $em;
+    protected $em;
 
     /**
      * @var Kernel
