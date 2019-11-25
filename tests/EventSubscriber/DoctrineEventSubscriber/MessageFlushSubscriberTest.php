@@ -3,6 +3,7 @@
 namespace App\Tests\EventSubscriber\DoctrineEventSubscriber;
 
 use App\Tests\FixtureAwareTestCase;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use App\DataFixtures\UserFixtures;
 use App\DataFixtures\MessageChatFixtures;
 use App\Entity\User;
@@ -15,8 +16,10 @@ class MessageFlushSubscriberTest extends FixtureAwareTestCase
     {
         parent::setUp();
 
-        $this->addFixture(new UserFixture());
-        $this->addFixture(new MessageChatFixture());
+        $passwordEncoder = $this->_kernel->getContainer()->get('security.password_encoder');
+
+        $this->addFixture(new UserFixtures($passwordEncoder));
+        $this->addFixture(new MessageChatFixtures());
         $this->executeFixtures();
     }
 
@@ -27,13 +30,13 @@ class MessageFlushSubscriberTest extends FixtureAwareTestCase
         $user1 = $userRepo->findOneBy(['email' => 'user1']);
         $user2 = $userRepo->findOneBy(['email' => 'user2']);
 
-        $chat = $em->getRepository(Chat::class)
+        $chat = $this->em->getRepository(Chat::class)
                     ->findOneByParticipants([
                         'participant1' => $user1, 
                         'participant2' => $user2
                     ]);
 
-        $this->assertEquals('I come from MessageChatFixtures', $chat->getLastMessage);
+        $this->assertEquals('I come from MessageChatFixtures', $chat->getLastMessage()->getText());
 
         $message = new Message();
 
@@ -43,6 +46,6 @@ class MessageFlushSubscriberTest extends FixtureAwareTestCase
         $this->em->persist($message);
         $this->em->flush();
 
-        $this->assertEquals('I come from MessageFlushSubscriberTest', $chat->getLastMessage);
+        $this->assertEquals('I come from MessageFlushSubscriberTest', $chat->getLastMessage()->getText());
     }
 }

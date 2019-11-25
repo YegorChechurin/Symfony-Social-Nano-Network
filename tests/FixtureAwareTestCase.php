@@ -20,7 +20,7 @@ class FixtureAwareTestCase extends KernelTestCase
     /**
      * @var Kernel
      */
-    private $kernel;
+    protected $_kernel;
 
     /**
      * @var ORMExecutor
@@ -34,9 +34,9 @@ class FixtureAwareTestCase extends KernelTestCase
 
     protected function setUp()
     {
-        $this->kernel = self::bootKernel();
+        $this->_kernel = self::bootKernel();
 
-        $this->em = $kernel->getContainer()
+        $this->em = $this->_kernel->getContainer()
             ->get('doctrine')
             ->getManager();
     }
@@ -76,7 +76,7 @@ class FixtureAwareTestCase extends KernelTestCase
     private function getFixtureLoader(): ContainerAwareLoader
     {
         if (!$this->fixtureLoader) {
-            $this->fixtureLoader = new ContainerAwareLoader($this->kernel->getContainer());
+            $this->fixtureLoader = new ContainerAwareLoader($this->_kernel->getContainer());
         }
 
         return $this->fixtureLoader;
